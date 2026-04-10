@@ -1,4 +1,6 @@
 
+package model;
+
 public abstract class Piece {
 
     // Enumération des couleurs (WHITE = joueur du bas, BLACK = joueur du haut)

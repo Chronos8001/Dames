@@ -1,9 +1,5 @@
 package model;
 
-/**
- * Represents a player in the international checkers game.
- * Encapsulation: all fields are private with controlled access.
- */
 public class Player {
     private final String name;
     private final Piece.Color color;
@@ -12,9 +8,6 @@ public class Player {
     private boolean isActive;
     
     /**
-     * Constructs a player for international checkers (10x10 board).
-     * International checkers starts with 20 pieces per player (4 rows x 5).
-     * 
      * @param name The player's name
      * @param color The color of the player's pieces
      */

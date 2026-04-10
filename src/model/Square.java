@@ -1,10 +1,5 @@
 package model;
 
-/**
- * Represents a single square on the checkers board.
- * Each square can either be empty or contain a piece.
- * Encapsulation: piece is private, accessed through getters/setters.
- */
 public class Square {
     private Piece piece;
     private final int row;
