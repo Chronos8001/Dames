@@ -19,8 +19,9 @@ public class Pion extends Piece {
     public int[][] getValidMoves(Piece[][] board, int row, int col) {
         List<int[]> moves = new ArrayList<>();
 
-        // Direction de déplacement : WHITE monte (direction = -1), BLACK descend (+1)
-        int direction = (getColor() == Color.WHITE) ? -1 : 1;
+        // CORRECTION : WHITE (rows 0-3) avance vers les rows croissantes (+1)
+        //              BLACK (rows 6-9) avance vers les rows décroissantes (-1)
+        int direction = (getColor() == Color.WHITE) ? 1 : -1;
 
         // Deux diagonales avant possibles : gauche et droite
         int[] colOffsets = {-1, 1};
@@ -47,8 +48,8 @@ public class Pion extends Piece {
     public int[][] getCaptures(Piece[][] board, int row, int col) {
         List<int[]> captures = new ArrayList<>();
 
-        // Direction avant uniquement pour les captures aussi
-        int direction = (getColor() == Color.WHITE) ? -1 : 1;
+        // CORRECTION : même direction que getValidMoves
+        int direction = (getColor() == Color.WHITE) ? 1 : -1;
 
         int[] colOffsets = {-1, 1};
 
@@ -82,9 +83,11 @@ public class Pion extends Piece {
      * @param row La ligne actuelle du pion après son déplacement
      * @return true si le pion doit être promu
      */
+    // CORRECTION : WHITE avance vers row 9 → promu à row 9
+    //              BLACK avance vers row 0  → promu à row 0
     public boolean shouldPromote(int row) {
-        if (getColor() == Color.WHITE && row == 0) return true;
-        if (getColor() == Color.BLACK && row == 9) return true;
+        if (getColor() == Color.WHITE && row == 9) return true;
+        if (getColor() == Color.BLACK && row == 0) return true;
         return false;
     }
     // Méthode utilitaire privée
