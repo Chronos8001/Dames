@@ -96,53 +96,59 @@ public class Game {
             return false;
         }
         
-        // Check if destination is empty
-        if (destPiece != null) {
+        // Vérification diagonale
+        int rowDiff = Math.abs(toRow - fromRow);
+        int colDiff = Math.abs(toCol - fromCol);
+        if (rowDiff != colDiff || rowDiff == 0) {
+            errorMessage = "Invalid move distance or direction";
+            return false;
+        }
+
+        // Vérifie si c'est un déplacement normal ou une capture
+        // On délègue aux méthodes de la pièce (polymorphisme : Pion ou Dame)
+        boolean isInNormalMoves  = isMoveInList(board.getValidMoves(fromRow, fromCol), toRow, toCol);
+        boolean isInCaptureMoves = isMoveInList(board.getCaptures(fromRow, fromCol), toRow, toCol);
+
+        // La destination doit être vide (vérifié seulement pour les mouvements normaux,
+        // pour les captures la case est forcément vide car getCaptures() le garantit)
+        if (destPiece != null && !isInCaptureMoves) {
             errorMessage = "Destination square is not empty";
             return false;
         }
-        
-        // Determine if this is a normal move or a capture
-        int rowDiff = Math.abs(toRow - fromRow);
-        int colDiff = Math.abs(toCol - fromCol);
-        
+
         Piece capturedPiece = null;
-        
-        if (rowDiff == 1 && colDiff == 1) {
-            // Normal move (1 square diagonally)
-            // Validate using piece's getValidMoves()
-            if (!isMoveInList(board.getValidMoves(fromRow, fromCol), toRow, toCol)) {
-                errorMessage = "Invalid move";
-                return false;
+
+        if (isInNormalMoves) {
+            // Déplacement normal validé
+        } else if (isInCaptureMoves) {
+            // CORRECTION : pour la Dame, la pièce capturée n'est pas forcément au milieu exact.
+            // On la cherche sur la diagonale entre fromRow et toRow.
+            int rowDir = (toRow - fromRow) > 0 ? 1 : -1;
+            int colDir = (toCol - fromCol) > 0 ? 1 : -1;
+            int r = fromRow + rowDir;
+            int c = fromCol + colDir;
+            while (r != toRow && c != toCol) {
+                if (board.getPiece(r, c) != null) {
+                    capturedPiece = board.removePiece(r, c);
+                    break;
+                }
+                r += rowDir;
+                c += colDir;
             }
-        } else if (rowDiff == 2 && colDiff == 2) {
-            // Capture move (2 squares diagonally)
-            // Validate using piece's getCaptures()
-            if (!isMoveInList(board.getCaptures(fromRow, fromCol), toRow, toCol)) {
-                errorMessage = "Invalid capture";
-                return false;
-            }
-            
-            // Get captured piece
-            int captureRow = (fromRow + toRow) / 2;
-            int captureCol = (fromCol + toCol) / 2;
-            capturedPiece = board.removePiece(captureRow, captureCol);
-            
+
             if (capturedPiece == null) {
                 errorMessage = "No piece to capture";
                 return false;
             }
-            
             if (capturedPiece.getColor() == currentPlayer.getColor()) {
                 errorMessage = "Cannot capture own piece";
                 return false;
             }
-            
-            // Remove captured piece from opponent's count
+
             Player opponent = currentPlayer == player1 ? player2 : player1;
             opponent.decrementPiecesCount();
         } else {
-            errorMessage = "Invalid move distance or direction";
+            errorMessage = "Invalid move";
             return false;
         }
         
@@ -150,7 +156,7 @@ public class Game {
         piece = board.removePiece(fromRow, fromCol);
         board.setPiece(toRow, toCol, piece);
         
-        // Check for promotion (reached opposite end of board)
+        // CORRECTION : WHITE avance vers row 9, BLACK avance vers row 0
         Piece promotedPiece = null;
         if (!piece.isDame() && ((currentPlayer.getColor() == Piece.Color.WHITE && toRow == 9) ||
                                 (currentPlayer.getColor() == Piece.Color.BLACK && toRow == 0))) {
