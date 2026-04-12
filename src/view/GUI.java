@@ -1,48 +1,31 @@
 package view;
 
-import model.Game;
-import model.Piece;
-import model.Player;
-import model.Move;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import model.Game;
+import model.Move;
+import model.Piece;
+import model.Player;
 
-/**
- * GUI — fenêtre principale du jeu de dames.
- *
- * Rôle dans MVC : VUE
- *   - Affiche le plateau via BoardPanel
- *   - Écoute les clics et appelle game.movePiece()
- *   - Ne contient aucune règle de jeu
- *
- * Pour lancer le jeu :
- *   Game game = new Game("Alice", "Bob");
- *   new GUI(game);
- */
+// Main window for the checkers game
 public class GUI extends JFrame {
 
-    // Référence au modèle (code du binôme)
     private final Game game;
 
-    // Composants Swing
     private BoardPanel boardPanel;
     private JLabel     playerLabel;
     private JLabel     scoreLabel;
     private JLabel     errorLabel;
     private JTextArea  historyArea;
 
-    // État de la sélection (lu par BoardPanel pour dessiner les surbrillances)
     int         selectedRow  = -1;
     int         selectedCol  = -1;
     List<int[]> normalMoves  = new ArrayList<>();
     List<int[]> captureMoves = new ArrayList<>();
 
-    // =========================================================================
-    // Constructeur
-    // =========================================================================
+    // Initialize the GUI with a game instance
     public GUI(Game game) {
         this.game = game;
         setTitle("Jeu de Dames");
@@ -55,9 +38,7 @@ public class GUI extends JFrame {
         refresh();
     }
 
-    // =========================================================================
-    // Construction de l'interface
-    // =========================================================================
+    // Build the main UI layout with board and side panel
     private void buildUI() {
         JPanel main = new JPanel(new BorderLayout(10, 0));
         main.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -69,6 +50,7 @@ public class GUI extends JFrame {
         add(main);
     }
 
+    // Create the right panel with player info, score, and history
     private JPanel buildSidePanel() {
         JPanel side = new JPanel();
         side.setLayout(new BoxLayout(side, BoxLayout.Y_AXIS));
@@ -99,6 +81,7 @@ public class GUI extends JFrame {
         return side;
     }
 
+    // Create a styled label
     private JLabel makeLabel(String text, Color color, int style, int size) {
         JLabel l = new JLabel(text);
         l.setForeground(color);
@@ -107,6 +90,7 @@ public class GUI extends JFrame {
         return l;
     }
 
+    // Create a horizontal separator
     private JSeparator makeSeparator() {
         JSeparator s = new JSeparator();
         s.setForeground(new Color(70, 70, 70));
@@ -115,6 +99,7 @@ public class GUI extends JFrame {
         return s;
     }
 
+    // Create a scrollable text area for move history
     private JScrollPane buildHistoryScroll() {
         historyArea = new JTextArea();
         historyArea.setEditable(false);
@@ -130,6 +115,7 @@ public class GUI extends JFrame {
         return scroll;
     }
 
+    // Create the "New Game" button
     private JButton buildNewGameButton() {
         JButton btn = new JButton("Nouvelle partie");
         btn.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -137,11 +123,7 @@ public class GUI extends JFrame {
         return btn;
     }
 
-    // =========================================================================
-    // Mise à jour de l'affichage
-    // =========================================================================
-
-    /** Rafraîchit tous les composants. Appelé après chaque coup. */
+    // Update all UI elements after each move
     void refresh() {
         boardPanel.repaint();
 
@@ -162,6 +144,7 @@ public class GUI extends JFrame {
         if (game.isGameOver()) showWinner();
     }
 
+    // Append the last move to the history display
     private void addToHistory() {
         List<Move> hist = game.getMoveHistory();
         if (hist.isEmpty()) return;
@@ -170,6 +153,7 @@ public class GUI extends JFrame {
         historyArea.setCaretPosition(historyArea.getDocument().getLength());
     }
 
+    // Display the winner message when game ends
     private void showWinner() {
         Player winner = game.getWinner();
         if (winner == null) return;
@@ -180,21 +164,12 @@ public class GUI extends JFrame {
             "Fin de partie", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // =========================================================================
-    // Logique de clic (appelée par BoardPanel)
-    // =========================================================================
-
-    /**
-     * Gère chaque clic sur le plateau.
-     * Premier clic  → sélectionne la pièce, affiche ses mouvements.
-     * Deuxième clic → joue le coup si destination valide.
-     */
+    // Handle board cell clicks: select piece or execute move
     void handleCellClick(int row, int col) {
         if (game.isGameOver()) return;
 
         Piece clicked = game.getBoard().getPiece(row, col);
 
-        // --- Aucune sélection : premier clic ---
         if (selectedRow == -1) {
             if (clicked == null) { showError("Case vide."); return; }
             if (clicked.getColor() != game.getCurrentPlayer().getColor()) {
@@ -204,28 +179,19 @@ public class GUI extends JFrame {
             return;
         }
 
-        // --- Pièce déjà sélectionnée : deuxième clic ---
-
-        // Re-clic sur la même case → désélectionne
         if (row == selectedRow && col == selectedCol) {
             clearSelection(); boardPanel.repaint(); return;
         }
-
-        // Clic sur une autre pièce du même joueur → change la sélection
         if (clicked != null && clicked.getColor() == game.getCurrentPlayer().getColor()) {
             select(row, col); return;
         }
-
-        // Clic sur une case surlignée → joue le coup
         if (isHighlighted(row, col)) {
             play(selectedRow, selectedCol, row, col); return;
         }
-
-        // Clic invalide
         clearSelection(); boardPanel.repaint(); showError("Mouvement invalide.");
     }
 
-    /** Sélectionne une pièce et charge ses mouvements depuis le modèle. */
+    // Select a piece and display its valid moves
     private void select(int row, int col) {
         selectedRow = row;
         selectedCol = col;
@@ -244,7 +210,7 @@ public class GUI extends JFrame {
             errorLabel.setText(" ");
     }
 
-    /** Joue un coup via game.movePiece() et met à jour l'affichage. */
+    // Execute a move from source to destination
     private void play(int fr, int fc, int tr, int tc) {
         boolean ok = game.movePiece(fr, fc, tr, tc);
         clearSelection();
@@ -252,19 +218,23 @@ public class GUI extends JFrame {
         else    { showError(game.getErrorMessage()); boardPanel.repaint(); }
     }
 
+    // Check if a cell is a valid move destination
     private boolean isHighlighted(int row, int col) {
         for (int[] m : normalMoves)  if (m[0]==row && m[1]==col) return true;
         for (int[] c : captureMoves) if (c[0]==row && c[1]==col) return true;
         return false;
     }
 
+    // Clear the selected piece and its move highlights
     private void clearSelection() {
         selectedRow = -1; selectedCol = -1;
         normalMoves.clear(); captureMoves.clear();
     }
 
+    // Display an error message
     private void showError(String msg) { errorLabel.setText(msg); }
 
+    // Reset the game and clear the board
     private void onNewGame() {
         int ok = JOptionPane.showConfirmDialog(this,
             "Recommencer une nouvelle partie ?", "Nouvelle partie",
@@ -277,9 +247,6 @@ public class GUI extends JFrame {
         }
     }
 
-    // =========================================================================
-    // Main
-    // =========================================================================
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new GUI(new Game("Alice", "Bob")));
     }
