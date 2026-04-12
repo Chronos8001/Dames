@@ -121,13 +121,13 @@ public class Game {
         if (isInNormalMoves) {
             // Déplacement normal validé
         } else if (isInCaptureMoves) {
-            // CORRECTION : pour la Dame, la pièce capturée n'est pas forcément au milieu exact.
-            // On la cherche sur la diagonale entre fromRow et toRow.
+            // For Dame, the captured piece may not be exactly in the middle
+            // Search for it on the diagonal between from and to position
             int rowDir = (toRow - fromRow) > 0 ? 1 : -1;
             int colDir = (toCol - fromCol) > 0 ? 1 : -1;
             int r = fromRow + rowDir;
             int c = fromCol + colDir;
-            while (r != toRow && c != toCol) {
+            while (r != toRow || c != toCol) {
                 if (board.getPiece(r, c) != null) {
                     capturedPiece = board.removePiece(r, c);
                     break;

@@ -40,7 +40,7 @@ public class Pion extends Piece {
         }
 
         // Convertit la liste en tableau 2D
-        return moves.toArray(new int[0][]);
+        return moves.toArray(new int[moves.size()][]);
     }
 
     // Captures valides
@@ -75,7 +75,7 @@ public class Pion extends Piece {
             }
         }
 
-        return captures.toArray(new int[0][]);
+        return captures.toArray(new int[captures.size()][]);
     }
 
     // Vérification de la promotion
