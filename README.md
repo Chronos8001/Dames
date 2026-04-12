@@ -1,3 +1,11 @@
+project : Checkers
+this project is a Checker game, coded in Java, using POO principles.
+
+# GUI justification
+we used Swing for GUI because it is already implemented in java, and easy to use. we were first going to us java FX, but decided to go back to swing, judging it would take too much time to learn how to use it and add it.
+using an implemented tool was the logical choice for it.
+
+
 # Compilation
 
 ```bash
@@ -93,3 +101,6 @@ Dames/
 - Chain captures are mandatory when available
 - Pieces become dames upon reaching the opposite end
 - Win by capturing all opponent pieces 
+
+![alt text](image.png)
+![alt text](image-1.png)
