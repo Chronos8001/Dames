@@ -5,35 +5,35 @@ import java.util.List;
 
 public class Dame extends Piece {
 
-    // Constructeur
+    // Constructor
     /**
-     * @param color La couleur de la Dame (WHITE ou BLACK)
+     * @param color The color of the dame (WHITE or BLACK)
      */
     public Dame(Color color) {
-        super(color);          // Appel du constructeur de Piece
-        setDame(true);         // Une Dame est toujours marquée comme telle
+        super(color);          // Call parent Piece constructor
+        setDame(true);         // A dame is always marked as such
     }
 
-    // Déplacements valides (sans capture)
+    // Valid moves (non-capture)
    
     @Override
     public int[][] getValidMoves(Piece[][] board, int row, int col) {
         List<int[]> moves = new ArrayList<>();
 
-        // Les 4 directions diagonales : (haut-gauche, haut-droite, bas-gauche, bas-droite)
+        // Four diagonal directions: (up-left, up-right, down-left, down-right)
         int[][] directions = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
         for (int[] dir : directions) {
             int r = row + dir[0];
             int c = col + dir[1];
 
-            // On avance case par case dans cette direction
+            // Move square by square in this direction
             while (isInsideBoard(r, c)) {
                 if (board[r][c] == null) {
-                    // Case vide : déplacement possible, on continue
+                    // Empty square: move is possible, continue
                     moves.add(new int[]{r, c});
                 } else {
-                    // Case occupée : on s'arrête (que ce soit ami ou ennemi)
+                    // Occupied square: stop (whether friend or enemy)
                     break;
                 }
                 r += dir[0];
@@ -44,7 +44,7 @@ public class Dame extends Piece {
         return moves.toArray(new int[0][]);
     }
 
-    // Captures valides
+    // Valid captures (jumps)
    
     @Override
     public int[][] getCaptures(Piece[][] board, int row, int col) {
@@ -56,19 +56,19 @@ public class Dame extends Piece {
             int r = row + dir[0];
             int c = col + dir[1];
 
-            // Cherche la première pièce dans cette direction
+            // Find first piece in this direction
             while (isInsideBoard(r, c) && board[r][c] == null) {
-                // Cases vides avant la pièce adverse : on continue à chercher
+                // Empty squares before opponent piece: continue searching
                 r += dir[0];
                 c += dir[1];
             }
 
-            // On a trouvé une pièce adverse ?
+            // Found opponent piece?
             if (isInsideBoard(r, c)
                     && board[r][c] != null
                     && board[r][c].getColor() != getColor()) {
 
-                // La Dame peut atterrir sur toutes les cases vides derrière
+                // Dame can land on all empty squares behind opponent piece
                 int landR = r + dir[0];
                 int landC = c + dir[1];
 
@@ -83,9 +83,9 @@ public class Dame extends Piece {
         return captures.toArray(new int[0][]);
     }
 
-    // Méthode utilitaire privée
+    // Utility method
     private boolean isInsideBoard(int row, int col) {
-        return row >= 0 && row < 10 && col >= 0 && col < 10;
+        return row >= 0 && row < Piece.BOARD_SIZE && col >= 0 && col < Piece.BOARD_SIZE;
     }
 
     @Override

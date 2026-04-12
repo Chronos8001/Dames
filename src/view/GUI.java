@@ -82,8 +82,8 @@ public class GUI extends JFrame {
         String player1Name = playerSetupPanel.getPlayer1Name();
         String player2Name = playerSetupPanel.getPlayer2Name();
         
-        // Create new game
-        Game game = new Game(player1Name, player2Name);
+        // Create new game with selected variant
+        Game game = new Game(player1Name, player2Name, selectedVariant);
         
         // Create game screen
         gameScreenPanel = new GameScreenPanel(game, this);

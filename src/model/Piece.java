@@ -3,27 +3,30 @@ package model;
 
 public abstract class Piece {
 
-    // Enumération des couleurs (WHITE = joueur du bas, BLACK = joueur du haut)
+    // Current board size (set by Game when a variant is selected)
+    public static int BOARD_SIZE = 10;
+    
+    // Color enumeration (WHITE = bottom player, BLACK = top player)
     public enum Color {
         WHITE, BLACK
     }
 
-    // Attributs (privés = encapsulation)
-    private Color color;      // Couleur de la pièce
-    private boolean isDame;   // true si la pièce a été promue en Dame
+    // Attributes (private = encapsulation)
+    private Color color;      // Color of the piece
+    private boolean isDame;   // true if promoted to Dame (king)
 
-    // Constructeur
+    // Constructor
     /**
-     * @param color La couleur de la pièce (WHITE ou BLACK)
+     * @param color The color of the piece (WHITE or BLACK)
      */
     public Piece(Color color) {
         this.color  = color;
-        this.isDame = false; // Au départ toutes les pièces sont des Pions
+        this.isDame = false; // Initially all pieces are Pions
     }
 
     // Getters / Setters
 
-    /** Retourne la couleur de la pièce */
+    /** Returns the color of the piece */
     public Color getColor() {
         return color;
     }

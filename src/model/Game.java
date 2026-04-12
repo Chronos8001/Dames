@@ -2,9 +2,11 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import view.GameVariant;
 
 public class Game {
     private Board board;
+    private int boardSize;
     private Player player1;
     private Player player2;
     private Player currentPlayer;
@@ -16,9 +18,11 @@ public class Game {
     /**
      * @param player1Name Name of the first player (WHITE)
      * @param player2Name Name of the second player (BLACK)
+     * @param variant The game variant (International 10x10 or English 8x8)
      */
-    public Game(String player1Name, String player2Name) {
-        this.board = new Board();
+    public Game(String player1Name, String player2Name, GameVariant variant) {
+        this.boardSize = variant.getBoardSize();
+        this.board = new Board(boardSize);
         this.player1 = new Player(player1Name, Piece.Color.WHITE);
         this.player2 = new Player(player2Name, Piece.Color.BLACK);
         this.currentPlayer = player1; // White player starts
@@ -26,6 +30,15 @@ public class Game {
         this.gameOver = false;
         this.winner = null;
         this.errorMessage = "";
+    }
+    
+    /**
+     * Legacy constructor for backwards compatibility (defaults to 10x10)
+     * @param player1Name Name of the first player (WHITE)
+     * @param player2Name Name of the second player (BLACK)
+     */
+    public Game(String player1Name, String player2Name) {
+        this(player1Name, player2Name, GameVariant.INTERNATIONAL);
     }
     
     // Getters
@@ -245,7 +258,7 @@ public class Game {
     
     // Resets the game to the initial state
     public void resetGame() {
-        this.board = new Board();
+        this.board = new Board(boardSize);
         this.player1 = new Player(player1.getName(), Piece.Color.WHITE);
         this.player2 = new Player(player2.getName(), Piece.Color.BLACK);
         this.currentPlayer = player1;

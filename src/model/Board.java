@@ -1,37 +1,45 @@
 package model;
 
 public class Board {
-    private static final int SIZE = 10;
+    private final int size;
     private final Piece[][] board;
     
     /**
-     * Constructs a new 10x10 board and initializes it with pieces in starting positions.
+     * Constructs a new board of the specified size and initializes it with pieces.
+     * @param size The board size (10 for International, 8 for English Draughts)
      */
-    public Board() {
-        this.board = new Piece[SIZE][SIZE];
+    public Board(int size) {
+        this.size = size;
+        this.board = new Piece[size][size];
+        // Update Piece class with board size for move validation
+        Piece.BOARD_SIZE = size;
         initializeBoard();
     }
     
     private void initializeBoard() {
         // Initialize empty board (null values)
-        for (int row = 0; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
                 board[row][col] = null;
             }
         }
         
-        // Place white pieces (rows 0-3) - Pion objects
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < SIZE; col++) {
+        // Calculate how many rows for each player
+        int piecesPerPlayer = size == 8 ? 3 : 4;
+        
+        // Place white pieces (first piecesPerPlayer rows)
+        for (int row = 0; row < piecesPerPlayer; row++) {
+            for (int col = 0; col < size; col++) {
                 if ((row + col) % 2 == 1) { // Dark squares only
                     board[row][col] = new Pion(Piece.Color.WHITE);
                 }
             }
         }
         
-        // Place black pieces (rows 6-9) - Pion objects
-        for (int row = 6; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
+        // Place black pieces (last piecesPerPlayer rows)
+        int blackStartRow = size - piecesPerPlayer;
+        for (int row = blackStartRow; row < size; row++) {
+            for (int col = 0; col < size; col++) {
                 if ((row + col) % 2 == 1) { // Dark squares only
                     board[row][col] = new Pion(Piece.Color.BLACK);
                 }
@@ -42,8 +50,8 @@ public class Board {
     /**
      * Gets the piece at the specified position.
      * 
-     * @param row The row index (0-9)
-     * @param col The column index (0-9)
+     * @param row The row index
+     * @param col The column index
      * @return The piece at the position, or null if empty or out of bounds
      */
     public Piece getPiece(int row, int col) {
@@ -90,7 +98,7 @@ public class Board {
      * @return true if the position is within board boundaries, false otherwise
      */
     public boolean isValidPosition(int row, int col) {
-        return row >= 0 && row < SIZE && col >= 0 && col < SIZE;
+        return row >= 0 && row < size && col >= 0 && col < size;
     }
     
     /**
@@ -108,10 +116,10 @@ public class Board {
     /**
      * Gets the size of the board.
      * 
-     * @return The board size (10 for international checkers)
+     * @return The board size (10 for International, 8 for English Draughts)
      */
     public int getSize() {
-        return SIZE;
+        return size;
     }
     
     /**
@@ -167,9 +175,9 @@ public class Board {
      * @return A new board with the same state
      */
     public Board copy() {
-        Board newBoard = new Board();
-        for (int row = 0; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
+        Board newBoard = new Board(size);
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
                 if (board[row][col] != null) {
                     // Note: This creates new Pion/Dame objects, not exact copies
                     Piece originalPiece = board[row][col];
